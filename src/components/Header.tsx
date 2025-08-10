@@ -10,7 +10,7 @@ const Header: React.FC = () => {
   if (!context) throw new Error('WeatherContext not found');
 
   const { weather } = context;
-  const cityName = weather?.name || 'Weather App';
+  const cityName = weather?.name || 'Weather App Binh';
   return (
     <header className="sticky top-0 z-50 shadow-md bg-white px-2">
       <div className="max-w-[500px] mx-auto py-3 flex justify-between items-center">
