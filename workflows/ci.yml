@@ -1,34 +1,48 @@
-name: CI Pipeline  # Tên workflow
+name: React CI Pipeline
 
 on:
   push:
-    branches: [ main, develop ]  # Trigger khi push vào main hoặc develop
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]  # Trigger khi tạo PR vào main hoặc develop
+    branches: [ main, develop ]
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest  # Hệ điều hành chạy job
+    runs-on: ubuntu-latest
 
     steps:
       # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Cài Node.js
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3. Cài dependencies
-      - name: Install dependencies
-        run: npm install
+      # 3. Cache node_modules để tăng tốc
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      # 4. Chạy test
+      # 4. Cài dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 5. Chạy test
       - name: Run tests
         run: npm test
 
-      # 5. Build project (nếu có)
-      - name: Build project
+      # 6. Build project
+      - name: Build React app
         run: npm run build
+
+      # 7. Lưu artifact (tùy chọn - để dùng cho deploy)
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build
